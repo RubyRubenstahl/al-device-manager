@@ -1,0 +1,56 @@
+/**
+ * Created by Mike on 6/18/2017.
+ */
+
+const dgram = require('dgram');
+const DeviceDriver = require('./device-driver');
+const ProgrammerStream = require('ecue-programmer-stream');
+
+class ProgrammerDriver extends DeviceDriver{
+
+    constructor(config = {}){
+        super();
+        this.initSocket(config.address, config.port)
+        this.initProgrammerConnection();
+    }
+
+    initProgrammerConnection(){
+        this.dispatch = ProgrammerStream.CommandDispatcher(this.socket, {address:'localhost'});
+        console.log("Initializing connection to programmer");
+    }
+
+    initSocket(address = '127.0.0.1', port=4000){
+        console.log("Initializing socket");
+        this.socket = dgram.createSocket('udp4', {address});
+        this.socket.bind(port);
+    }
+
+    isAlive(){
+        return true;
+    }
+
+    commands(){
+        return({
+            PLAY_CUELIST: {
+                name: "PLAY_CUELIST",
+                params: {
+                    cuelist: {required: true, type: "Number"},
+                },
+                run: function(cuelist) {
+                    this.dispatch.send({command: 'CUELIST_PLAY', params:[1,3]})
+                }
+            },
+            PLAY_CUE:{
+                name: "PLAY_CUE",
+                params: {
+                    cuelist: {required: true, type: "Number"},
+                    cue: {required: true, type: "Number"},
+                },
+                run: function(cuelist, cue){console.log(`Playing Cue: ${cuelist}/${cue}`)}
+            }
+        });
+    }
+}
+
+
+module.exports = ProgrammerDriver;

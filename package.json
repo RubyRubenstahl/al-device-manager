@@ -1,0 +1,11 @@
+{
+  "name": "al-device-manager",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": {},
+  "license": "MIT",
+  "dependencies": {
+    "ecue-programmer-stream": "^0.0.3",
+    "type-check": "^0.3.2"
+  }
+}
